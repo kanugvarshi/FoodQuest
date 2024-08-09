@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Restaurant</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{
+            /* background-color:cornsilk; */
+            background-image: url('https://wallpapers.com/downloads/high/restaurant-in-park-hyatt-tokyo-japan-a3r62zoiuwz7uhra.webp');
+            background-size: cover; 
+            background-position: center; 
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .jumbotron {
+            background-image: url('https://as1.ftcdn.net/v2/jpg/05/04/19/00/1000_F_504190003_lC3anwzZyEvJPmtGbTC5XgL5fmoS9XHB.jpg');
+            background-size: cover; 
+            background-position: center; 
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 0.3rem;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            border-radius: 0.3rem;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .card {
+            background-image: url('https://images.pexels.com/photos/616401/pexels-photo-616401.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover; 
+            background-position: center; 
+            border-radius: 0.75rem;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            padding-left: 150px;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        .card-text {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input {
+            border-radius: 0.3rem;
+        }
+        .tes{
+            color: blanchedalmond
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h1 class="display-4">Search Restaurant by ID</h1>
+            <p class="lead">Find detailed information about a restaurant by entering its ID.</p>
+        </div>
+
+        <!-- Back to Index Button -->
+        <div class="text-center mb-4">
+            <a href="index.html" class="btn btn-secondary">Back to Restaurant List</a>
+        </div>
+
+        <!-- Search Form -->
+        <form id="search-form" class="mb-4">
+            <div class="form-group">
+                <label for="restaurant-id" class="tes">Restaurant ID:</label>
+                <input type="number" class="form-control" id="restaurant-id" placeholder="Enter Restaurant ID" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+        <!-- Search Results -->
+        <div id="search-results"></div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#search-form').submit(function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                const restaurantId = $('#restaurant-id').val();
+                $.ajax({
+                    url: `/api/restaurants/${restaurantId}`,
+                    method: 'GET',
+                    success: function(data) {
+                        const searchResults = $('#search-results');
+                        searchResults.empty();
+                        if (data) {
+                            const restaurantItem = `
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${data.Restaurant_Name}</h5>
+                                        <p class="card-text"><strong>Address:</strong> ${data.City}, ${data.Address}</p>
+                                        <p class="card-text"><strong>Cuisines:</strong> ${data.Cuisines}</p>
+                                        <p class="card-text"><strong>Average Cost for Two:</strong> ${data.Average_Cost_for_two}</p>
+                                        <p class="card-text"><strong>Rating:</strong>${data.Aggregate_rating} (${data.Rating_text})</p>
+                                        <p class="card-text"><strong>Votes:</strong> ${data.Votes}</p>
+                                    </div>
+                                </div>
+                            `;
+                            searchResults.append(restaurantItem);
+                        } else {
+                            searchResults.html('<p class="text-danger">No restaurant found with this ID.</p>');
+                        }
+                    },
+                    error: function() {
+                        $('#search-results').html('<p class="text-danger">Error fetching restaurant details.</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
